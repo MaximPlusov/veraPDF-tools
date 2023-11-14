@@ -27,7 +27,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: 'output'
+          source-directory: 'corpus-wiki-generation/output'
           destination-github-username: 'MaximPlusov'
           destination-repository-name: 'veraPDF-validation-profiles'
           target-branch: integration
