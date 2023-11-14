@@ -31,4 +31,4 @@ jobs:
           destination-branch: master
           git-user: "Git User"
           git-commit-sign-off: "false"
-          excludes: PDF_A:Undefined.md:README.md
+          excludes: .git:PDF_A:Undefined.md:README.md
