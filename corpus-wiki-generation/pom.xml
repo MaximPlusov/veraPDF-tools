@@ -2,33 +2,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>verapdf-tools</artifactId>
         <groupId>org.verapdf</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.verapdf</groupId>
 
-    <artifactId>pdf-deprecated-finder</artifactId>
+    <groupId>org.verapdf</groupId>
+    <artifactId>corpus-wiki-generator</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.verapdf.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>[2.0.62,2.1.0)</version>
+            <groupId>org.verapdf</groupId>
+            <artifactId>validation-model</artifactId>
+            <version>${verapdf.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.69</version>
-        </dependency>
-        <dependency>
-            <groupId>org.verapdf.pdfbox</groupId>
-            <artifactId>xmpbox</artifactId>
-            <version>[2.0.62,2.1.0)</version>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.26</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -45,7 +47,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.verapdf.tools.Cli</mainClass>
+                            <mainClass>org.verapdf.tools.CorpusWikiGenerator</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

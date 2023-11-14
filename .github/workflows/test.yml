@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    name: Checkout and Build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: JDK setup
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: maven
+      - name: Test
+        run: cd policy-generator
+              mvn clean package
+              cd target
+              java -jar policy-generator.jar

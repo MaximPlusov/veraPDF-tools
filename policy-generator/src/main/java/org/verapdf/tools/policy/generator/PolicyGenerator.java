@@ -4,7 +4,7 @@ import org.apache.commons.cli.*;
 import org.verapdf.core.VeraPDFException;
 import org.verapdf.metadata.fixer.FixerFactory;
 import org.verapdf.metadata.fixer.MetadataFixerConfig;
-import org.verapdf.pdfa.VeraGreenfieldFoundryProvider;
+import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider;
 import org.verapdf.pdfa.flavours.PDFAFlavour;
 import org.verapdf.pdfa.validation.profiles.Profiles;
 import org.verapdf.pdfa.validation.profiles.ValidationProfile;
@@ -26,9 +26,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.util.stream.Collectors.toList;
 
 public class PolicyGenerator {
     private static final String HELP = "[options] <FILE>\n Options:";
@@ -59,31 +62,33 @@ public class PolicyGenerator {
 
         try {
             PolicyGenerator generator = new PolicyGenerator();
-            if (commandLine.hasOption("n")) {
-                generator.isLogsEnabled = false;
-            }
-            if (commandLine.hasOption("p")) {
-                String profilePath = commandLine.getOptionValue("profile");
-                if (profilePath != null) {
-                    try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
-                        generator.customProfile = Profiles.profileFromXml(is);
-                    } catch (JAXBException | FileNotFoundException e) {
-                        generator.customProfile = null;
-                        logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             if (commandLine.getArgs().length < 1) {
                 formatter.printHelp(HELP, options);
                 return;
             }
+            if (commandLine.hasOption("n")) {
+                generator.isLogsEnabled = false;
+            }
             generator.fileName = String.join(" ", commandLine.getArgs());
-
-            generator.validate();
+            if (commandLine.hasOption("v")) {
+                generator.validate(commandLine.getOptionValue("v"), commandLine.getOptionValue("profile"));
+            } else {
+                if (commandLine.hasOption("p")) {
+                    String profilePath = commandLine.getOptionValue("profile");
+                    if (profilePath != null) {
+                        try (InputStream is = new FileInputStream(Paths.get(profilePath).toFile())) {
+                            generator.customProfile = Profiles.profileFromXml(is);
+                        } catch (JAXBException | FileNotFoundException e) {
+                            generator.customProfile = null;
+                            logger.log(Level.WARNING, "Error while getting profile from xml file. The profile will be selected automatically");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                generator.validate();
+            }
             generator.generate();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,18 +102,61 @@ public class PolicyGenerator {
         Option profile = new Option("p", "profile", true, "Specifies path to custom profile");
         profile.setRequired(false);
         options.addOption(profile);
+        Option verapdfPath = new Option("v", "verapdf_path", true, "path to verapdf");
+        verapdfPath.setRequired(false);
+        options.addOption(verapdfPath);
         return options;
     }
 
+    private void validate(String verapdfPath, String profilePath) throws IOException {
+        List<String> command = new LinkedList<>();
+        List<String> veraPDFParameters = new LinkedList<>();
+        if (isLogsEnabled) {
+            veraPDFParameters.add("--addlogs");
+        }
+        if (profilePath != null) {
+            veraPDFParameters.add("--profile");
+            veraPDFParameters.add(profilePath);
+        }
+
+        File tempMrrFile = File.createTempFile("veraPDF", ".mrr");
+        tempMrrFile.deleteOnExit();
+        veraPDFParameters.add("1>" + tempMrrFile.getAbsolutePath());
+        command.add(verapdfPath);
+        command.addAll(veraPDFParameters);
+        command.add(fileName);
+
+        command = command.stream().map(parameter -> {
+            if (parameter.isEmpty()) {
+                return "\"\"";
+            }
+            return parameter;
+        }).collect(toList());
+
+        try {
+            ProcessBuilder pb = new ProcessBuilder();
+            pb.command(command);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process process = pb.start();
+            process.waitFor();
+            report = new FileInputStream(tempMrrFile);
+        } catch (IOException | InterruptedException exception) {
+            exception.printStackTrace();
+        }
+    }
+
     private void validate() throws IOException {
-        MetadataFixerConfig fixConf = FixerFactory.configFromValues("test", true);
+        MetadataFixerConfig fixConf = FixerFactory.configFromValues("test");
 
         ProcessorConfig processorConfig = this.customProfile == null
                 ? ProcessorFactory.fromValues(
-                ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR, PDFAFlavour.PDFA_1_B, true, 0, false, isLogsEnabled, Level.WARNING, BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS),
+                ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR, PDFAFlavour.PDFA_1_B, true,
+                        0, false, isLogsEnabled, Level.WARNING, BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false, false),
                 null, null, fixConf, EnumSet.of(TaskType.VALIDATE), (String) null)
-                : ProcessorFactory.fromValues(
-                ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR, PDFAFlavour.NO_FLAVOUR, true, 0, false, isLogsEnabled, Level.WARNING, BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS),
+                : ProcessorFactory.fromValues(ValidatorFactory.createConfig(PDFAFlavour.NO_FLAVOUR,
+                PDFAFlavour.NO_FLAVOUR, true, 0, false, isLogsEnabled, Level.WARNING,
+                BaseValidator.DEFAULT_MAX_NUMBER_OF_DISPLAYED_FAILED_CHECKS, false, "", false, false),
                 null, null, fixConf, EnumSet.of(TaskType.VALIDATE), this.customProfile, null);
 
         BatchProcessor processor = ProcessorFactory.fileBatchProcessor(processorConfig);
@@ -259,7 +307,8 @@ public class PolicyGenerator {
                     String occurrencesToBeReplaced = node.getAttributes().getNamedItem("occurrences").getNodeValue();
                     String levelToBeReplaced = node.getAttributes().getNamedItem("level").getNodeValue();
                     content.append(PolicyHelper.LOG
-                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;"))
+                            .replace("{logToBeReplaced}", logToBeReplaced.replace("'", "&apos;")
+                                    .replace(shortFilePath, ".pdf"))
                             .replace("{occurrencesToBeReplaced}", occurrencesToBeReplaced)
                             .replace("{levelToBeReplaced}", levelToBeReplaced));
 
