@@ -30,4 +30,4 @@ jobs:
           source-directory: 'output'
           destination-github-username: 'MaximPlusov'
           destination-repository-name: 'veraPDF-validation-profiles'
-          target-branch: main
+          target-branch: integration
