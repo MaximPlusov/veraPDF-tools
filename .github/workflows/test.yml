@@ -19,7 +19,7 @@ jobs:
       - name: Test
         run: |
               cd corpus-wiki-generation
-               output mkdir
+              mkdir output
               java -jar corpus-wiki-generator-1.0-SNAPSHOT.jar
           
       - name: Pushes to another repository
