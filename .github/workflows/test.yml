@@ -26,7 +26,7 @@ jobs:
         uses: drud/action-cross-commit@master
         with:
           source-folder: corpus-wiki-generation/output
-          destination-repository: https://MaximPlusov:${{ secrets.API_TOKEN_GITHUB }}@github.com/MaximPlusov/veraPDF-validation-profiles
+          destination-repository: https://MaximPlusov:${{ secrets.API_TOKEN_GITHUB }}@github.com/MaximPlusov/veraPDF-validation-profiles.wiki
           destination-folder: .
           destination-branch: master
           git-user: "Git User"
