@@ -27,6 +27,7 @@ jobs:
         with:
           source-folder: corpus-wiki-generation/output
           destination-repository: https://MaximPlusov:${{ secrets.API_TOKEN_GITHUB }}@github.com/MaximPlusov/veraPDF-validation-profiles
+          destination-folder: .
           destination-branch: integration
           git-user: "Git User"
           git-commit-sign-off: "false"
