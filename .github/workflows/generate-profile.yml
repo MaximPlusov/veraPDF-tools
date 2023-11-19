@@ -1,0 +1,28 @@
+name: Generate validation profile
+
+on:
+  workflow_call:
+    inputs:
+      profile-path:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Checkout and Build
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: JDK setup
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: maven
+      - name: Generate wiki files
+        run: |
+          cd profile-merger
+          java -jar profile-merger-1.0-SNAPSHOT.jar ${{ github.event.inputs.profile-path }}
