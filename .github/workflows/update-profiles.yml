@@ -1,0 +1,33 @@
+name: Generate validation profile
+
+on:
+  workflow_dispatch: 
+    inputs:
+      pdfa1a:
+        required: true
+        description: pdfa1a
+        type: string
+      pdfa1b:
+        required: true
+        description: pdfa1b
+        type: string    
+
+jobs:
+  pdfa1a:
+    needs: paths-filter
+    if: github.event.inputs.pdfa1a == 'true'
+    uses: MaximPlusov/veraPDF-tools/.github/workflows/generate-profile.yml@master
+    with:
+      profile-path: '1a'
+      
+  pdfa1b:
+    needs: paths-filter
+    if: github.event.inputs.pdfa1b == 'true'
+    uses: MaximPlusov/veraPDF-tools/.github/workflows/generate-profile.yml@master
+    with:
+      profile-path: '1b'
+  
+  commit-profiles:
+    needs: [pdfa1a, pdfa1b]
+    name: Commit to validation profiles
+    uses: MaximPlusov/veraPDF-tools/.github/workflows/push-profiles.yml@master
