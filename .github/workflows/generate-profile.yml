@@ -27,6 +27,7 @@ jobs:
         run: |
           cd profile-merger
           java -jar profile-merger-1.0-SNAPSHOT.jar 1a
+          java -jar profile-merger-1.0-SNAPSHOT.jar 1b
       - name: Commit to veraPDF-corpus.wiki
         uses: drud/action-cross-commit@master
         with:
