@@ -34,8 +34,8 @@ jobs:
         with:
           source-folder: profile-merger/output
           destination-repository: https://MaximPlusov:${{ secrets.WORKFLOW_TOKEN }}@github.com/MaximPlusov/veraPDF-validation-profiles
-          destination-folder: .
-          destination-branch: master
+          destination-folder: PDF_A
+          destination-branch: integration
           git-user: "Git User"
           git-commit-message: "Update profiles"
           git-commit-sign-off: "false"
