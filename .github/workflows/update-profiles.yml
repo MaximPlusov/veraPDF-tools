@@ -1,4 +1,4 @@
-name: Generate validation profile
+name: Update profiles
 
 on:
   workflow_dispatch: 

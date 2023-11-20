@@ -25,4 +25,4 @@ jobs:
       - name: Generate wiki files
         run: |
           cd profile-merger
-          java -jar profile-merger-1.0-SNAPSHOT.jar ${{ github.event.inputs.profile-path }}
+          java -jar profile-merger-1.0-SNAPSHOT.jar ${{ inputs.profile-path }}
