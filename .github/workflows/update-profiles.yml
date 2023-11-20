@@ -26,7 +26,6 @@ jobs:
       profile-path: '1b'
   
   commit-profiles:
-    needs: [pdfa1a, pdfa1b]
     name: Commit profiles
     runs-on: ubuntu-20.04
     steps:
