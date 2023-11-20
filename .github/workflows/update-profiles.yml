@@ -14,14 +14,12 @@ on:
 
 jobs:
   pdfa1a:
-    needs: paths-filter
     if: github.event.inputs.pdfa1a == 'true'
     uses: MaximPlusov/veraPDF-tools/.github/workflows/generate-profile.yml@master
     with:
       profile-path: '1a'
       
   pdfa1b:
-    needs: paths-filter
     if: github.event.inputs.pdfa1b == 'true'
     uses: MaximPlusov/veraPDF-tools/.github/workflows/generate-profile.yml@master
     with:
