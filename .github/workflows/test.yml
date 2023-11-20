@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: JDK setup
         uses: actions/setup-java@v2
         with:
@@ -26,9 +28,9 @@ jobs:
         uses: drud/action-cross-commit@master
         with:
           source-folder: corpus-wiki-generation/output
-          destination-repository: https://MaximPlusov:${{ secrets.API_TOKEN_GITHUB }}@github.com/MaximPlusov/veraPDF-validation-profiles.wiki
+          destination-repository: https://MaximPlusov:${{ secrets.API_TOKEN_GITHUB }}@github.com/MaximPlusov/veraPDF-validation-profiles
           destination-folder: .
           destination-branch: master
           git-user: "Git User"
           git-commit-sign-off: "false"
-          excludes: .git:PDF_A:Undefined.md:README.md
+          excludes: .git:Home.md:Undefined.md:ISO 32000 1.md:ISO 32000 2.md:TWG test files.md
