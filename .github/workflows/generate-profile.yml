@@ -6,6 +6,7 @@ on:
       profile-path:
         required: true
         type: string
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,7 +26,7 @@ jobs:
       - name: Generate wiki files
         run: |
           cd profile-merger
-          java -jar profile-merger-1.0-SNAPSHOT.jar ${{ inputs.profile-path }}
+          java -jar profile-merger-1.0-SNAPSHOT.jar 1a
       - name: Commit to veraPDF-corpus.wiki
         uses: drud/action-cross-commit@master
         with:
