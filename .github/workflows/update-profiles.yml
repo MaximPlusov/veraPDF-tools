@@ -6,11 +6,11 @@ on:
       pdfa1a:
         required: true
         description: pdfa1a
-        type: string
+        type: boolean
       pdfa1b:
         required: true
         description: pdfa1b
-        type: string    
+        type: boolean    
 
 jobs:
   pdfa1a:
