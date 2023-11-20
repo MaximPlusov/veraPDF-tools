@@ -26,11 +26,6 @@ jobs:
         run: |
           cd profile-merger
           java -jar profile-merger-1.0-SNAPSHOT.jar ${{ inputs.profile-path }}
-          
-  commit-profiles:
-    name: Commit profiles
-    runs-on: ubuntu-20.04
-    steps:
       - name: Commit to veraPDF-corpus.wiki
         uses: drud/action-cross-commit@master
         with:
@@ -41,4 +36,4 @@ jobs:
           git-user: "Git User"
           git-commit-message: "Update profiles"
           git-commit-sign-off: "false"
-          excludes: .git:Home.md          
+          excludes: .git:Home.md       
