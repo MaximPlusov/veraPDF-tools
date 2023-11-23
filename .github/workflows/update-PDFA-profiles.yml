@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       commit-name:
-        required: true
+        required: false
         description: Commit name
         type: string
 jobs:
@@ -35,6 +35,6 @@ jobs:
           destination-folder: PDF_A
           destination-branch: integration
           git-user: "Git User"
-          git-commit-message: ${{ inputs.commit-name }}
+          git-commit-message: "test"
           git-commit-sign-off: "false"
           excludes: 1a:1b:2a:2b:2u:3a:3b:3u:4:4e:4f     
