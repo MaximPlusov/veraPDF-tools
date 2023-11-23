@@ -6,6 +6,7 @@ on:
     inputs:
       commit-name:
         required: true
+        description: Commit name
         type: string
 jobs:
   build:
