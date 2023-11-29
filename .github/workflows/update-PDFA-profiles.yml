@@ -7,7 +7,7 @@ on:
       commit:
         required: true
         description: Commit name
-        type: string
+        type: env
 jobs:
   build:
     name: Checkout and Build
